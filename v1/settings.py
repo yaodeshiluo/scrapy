@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'v1.spiders'
 #USER_AGENT = 'v1 (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -32,6 +32,11 @@ ROBOTSTXT_OBEY = True
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
 
+
+DOWNLOADER_MIDDLEWARES = {
+    'v1.middlewares.middleware.CustomMiddlewares': 543,
+    # 'scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware': None
+}
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
 
