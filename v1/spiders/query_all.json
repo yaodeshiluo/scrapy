@@ -225,7 +225,33 @@
     "sales": "//*[@id=\"sale\"]",
     "src": "www.caipiao.163.com",
     "detail": "//*[@id=\"sport_table\"]",
-    "col_span":[0],
-    "row_span":[1,3,5,7,9,11]
+    "col_span":[0]
+  },
+  {"caizhong":"pailie3",
+    "website":"http://www.lecai.com/lottery/draw/view/3",
+    "urllist":"//*[@id=\"history_phase_list\"]/option[position()<=20]/text()",
+    "balance":"",
+    "issue":"//*[@id=\"jq_draw_phase\"]",
+    "key": "pailie3",
+    "name": "排列3",
+    "open_time": "//*[@id=\"jq_draw_date\"]",
+    "result": "//*[@id=\"jq_draw_result\"]/span",
+    "sales": "//*[@id=\"jq_volume\"]",
+    "src": "www.lecai.com",
+    "detail": "//*[@id=\"jq_draw_detail\"]",
+    "webdriver":"phantomjs"
+  },
+  {"caizhong":"palie3",
+    "website":"http://kjh.cailele.com/kj_p3.shtml",
+    "urllist":"//*[@id=\"termValue\"]/option/text()",
+    "balance":"/html/body/div[1]/div[2]/p/span[3]",
+    "issue":"/html/body/div[1]/div[1]/span[2]/p[2]",
+    "key": "pailie3",
+    "name": "排列3",
+    "open_time": "/html/body/div[1]/div[2]/p/span[1]",
+    "result": "//*[@id='resultStr']/@value",
+    "sales": "/html/body/div[1]/div[2]/p/span[2]",
+    "src": "kjh.cailele.com",
+    "detail": "http://kjh.cailele.com/kj_p3.shtml"
   }
 ]

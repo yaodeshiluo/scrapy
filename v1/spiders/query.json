@@ -1,17 +1,16 @@
 [
   {"caizhong":"daletou",
-    "website":"http://kaijiang.500.com/dlt.shtml",
-    "urllist":"//div[@class='kjxq_box02_title_right']/span[@class='iSelectBox']/div/a[position()<=30]/@href",
-    "balance":"//span[@class=\"cfont1\"][2]",
-    "issue":"//font[@class=\"cfont2\"]/strong",
+    "website":"http://caipiao.163.com/award/dlt/",
+    "urllist":"//a[starts-with(@href,'/award/dlt/') and @bonus and @pool]/text()",
+    "balance":"//*[@id=\"pool\"]",
+    "issue":"//*[@id=\"date_no\"]",
     "key": "daletou",
     "name": "大乐透",
-    "open_time": "//span[@class=\"span_right\"]",
-    "result": "//div[@class=\"ball_box01\"]/ul/li",
-    "sales": "//span[@class=\"cfont1\"][1]",
-    "src": "kaijiang.500.com",
-    "detail": "/html/body/div[1]/div[8]/div[2]/div[1]/div[2]/table[3]",
-    "col_span":[0],
-    "row_span":[2,4,6,8,10,12]
+    "open_time": "//*[@id='time']",
+    "result": "//*[@id=\"zj_area\"]/span",
+    "sales": "//*[@id=\"sale\"]",
+    "src": "www.caipiao.163.com",
+    "detail": "//*[@id=\"sport_table\"]",
+    "col_span":[0]
   }
 ]

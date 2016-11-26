@@ -13,5 +13,19 @@
     "detail": "//*[@id=\"result\"]",
     "col_span":[0],
     "row_span":[1,3,5,7,9]
+  },
+  {"caizhong":"daletou",
+    "website":"http://kaijiang.500.com/dlt.shtml",
+    "urllist":"//div[@class='kjxq_box02_title_right']/span[@class='iSelectBox']/div/a[position()<=30]/@href",
+    "balance":"//span[@class=\"cfont1\"][2]",
+    "issue":"//font[@class=\"cfont2\"]/strong",
+    "key": "daletou",
+    "name": "大乐透",
+    "open_time": "//span[@class=\"span_right\"]",
+    "result": "//div[@class=\"ball_box01\"]/ul/li",
+    "sales": "//span[@class=\"cfont1\"][1]",
+    "src": "kaijiang.500.com",
+    "detail": "/html/body/div[1]/div[8]/div[2]/div[1]/div[2]/table[3]",
+    "col_span":[0,12]
   }
 ]

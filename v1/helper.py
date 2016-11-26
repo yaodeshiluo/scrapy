@@ -46,7 +46,9 @@ def get_url_list(response):
                       'http://caipiao.163.com/award/dlt/':'http://caipiao.163.com/award/dlt/%s.html',
                       'http://caipiao.163.com/award/ssq/':'http://caipiao.163.com/award/ssq/%s.html',
                       'http://www.zhcw.com/kaijiang/zhcw_qlc_index.html':'http://kaijiang.zhcw.com/zhcw/html/qlc/detail_%s.html',
-                      'http://kjh.cailele.com/kj_qlc.shtml':'http://kjh.cailele.com/common/kjgg.php?lotType=101&&term=%s'}
+                      'http://kjh.cailele.com/kj_qlc.shtml':'http://kjh.cailele.com/common/kjgg.php?lotType=101&&term=%s',
+                      'http://www.lecai.com/lottery/draw/view/3':'http://www.lecai.com/lottery/draw/view/3/%s?',
+                      'http://kjh.cailele.com/kj_p3.shtml':'http://kjh.cailele.com/common/kjgg.php?lotType=3&term=%s'}
     if special_urls_1.get(response.url):
         baseurl = special_urls_1.get(response.url)
         alist = []
@@ -83,7 +85,11 @@ def get_detail_list(sel,response):
                                                              u'四等奖/追加':'prize13',
                                                              u'五等奖/基本':'prize8',
                                                              u'五等奖/追加':'prize14',
-                                                             u'六等奖/基本':'prize9'}}
+                                                             u'六等奖/基本':'prize9'},
+                      'http://kjh.cailele.com/kj_p3.shtml':{u'直选':'prize1',
+                                                            u'组选三':'prize2',
+                                                            u'组选六':'prize3'}
+                      }
     if response.meta.get('detail') in special_urls_1:
         info = response.selector.xpath('//input[3]/@value').extract()
         detail_list = []
@@ -95,21 +101,23 @@ def get_detail_list(sel,response):
         return detail_list
 
     detail_list = []
+    col_span = None
+    if response.meta.get('col_span'):
+        col_span = response.meta.get('col_span')
     tr1 = sel.xpath(response.meta.get('detail') + '//tr[1]/*/text()').extract()
     down_num = 0
     if len(tr1) < 3:
         tr1 = sel.xpath(response.meta.get('detail') + '//tr[2]/*/text()').extract()
         down_num += 1
-    if response.meta.get('col_span'):
+    if col_span and down_num in col_span:
         from copy import deepcopy
-        col_span = response.meta.get('col_span')
         tr1_copy = deepcopy(tr1)
-        for i in col_span:
-            add = ''.join([tr1_copy[i],u'_'])
-            tr1.insert(tr1.index(tr1_copy[i])+1,add)
+        add = ''.join([tr1_copy[0],u'_'])
+        tr1.insert(tr1.index(tr1_copy[0])+1,add)
     num = 0 + down_num
     append = None
-    for i in range(1+down_num, len(sel.xpath(response.meta.get('detail') + '//tr'))):
+    tr1_length = len(tr1)
+    for i in range(down_num + 1, len(sel.xpath(response.meta.get('detail') + '//tr'))):
         num += 1
         # len(sel.xpath(meta.get('detail') +'//tr'))
         each_tr = sel.xpath(response.meta.get('detail') + '//tr[%s]/td' % (i + 1)).xpath('string(.)').extract()
@@ -117,12 +125,16 @@ def get_detail_list(sel,response):
         if len(each_tr) < 3:
             pass
         else:
-            if response.meta.get('row_span'):
-                if num in response.meta.get('row_span'):
-                    append = each_tr[0]
-                else:
-                    if append:
-                        each_tr.insert(0,append)
+            if col_span and num in col_span:
+                from copy import deepcopy
+                each_tr_copy = deepcopy(each_tr)
+                add = ''.join([each_tr_copy[0], u'_'])
+                each_tr.insert(each_tr.index(each_tr_copy[0]) + 1, add)
+            if len(each_tr) == tr1_length:
+                append = each_tr[0]
+            else:
+                if append:
+                    each_tr.insert(0,append)
 
             adict = {}
 
@@ -130,6 +142,5 @@ def get_detail_list(sel,response):
                 adict[tr1[j]] = each_tr[j]
             detail_list.append(adict)
     return detail_list
-
 
 
