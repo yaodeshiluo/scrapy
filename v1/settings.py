@@ -69,9 +69,13 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
+ITEM_PIPELINES = {'v1.pipelines.MongoPipeline':300}
 #    'v1.pipelines.SomePipeline': 300,
 #}
+MONGO_HOST = '127.0.0.1'
+MONGO_PORT = 27017
+MONGO_DBNAME = 'caipiao'
+MONGO_DOCNAME = 'test'
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html

@@ -1,20 +1,21 @@
 [
-  {"caizhong":"palie3",
-    "website":"http://kjh.cailele.com/kj_p3.shtml",
-    "urllist":"//*[@id=\"termValue\"]/option/text()",
-    "balance":"/html/body/div[1]/div[2]/p/span[3]",
-    "issue":"/html/body/div[1]/div[1]/span[2]/p[2]",
-    "key": "pailie3",
-    "name": "排列3",
-    "open_time": "/html/body/div[1]/div[2]/p/span[1]",
-    "result": "//*[@id='resultStr']/@value",
-    "sales": "/html/body/div[1]/div[2]/p/span[2]",
-    "src": "kjh.cailele.com",
+  {"caizhong":"fucai3d",
+    "website":"http://www.lecai.com/lottery/draw/list/52",
+    "urllist":"/html/body/div[5]/div[1]/table/tbody/tr[position()>=1 and position()<=30]/td[1]/a/text()",
+    "balance":"sel.get(\"data\").get(\"pool_amount\")",
+    "issue":"sel.get(\"data\").get(\"phase\")",
+    "key": "fucai3d",
+    "name": "福彩3d",
+    "open_time": "sel.get(\"data\").get(\"time_draw\")",
+    "result": "','.join(sel.get(\"data\").get(\"result\").get(\"result\")[0].get(\"data\"))",
+    "sales": "sel.get(\"data\").get(\"sale_amount\")",
+    "src": "www.lecai.com",
     "detail": [
-      [{"input":"直选"},{"xpath":"//input[3]/@value","regex":"prize1\\^.*?\\^(.*?)#"},{"xpath":"//input[3]/@value","regex":"prize1\\^(.*?)\\^.*?#"}],
-      [{"input":"组选三"},{"xpath":"//input[3]/@value","regex":"prize2\\^.*?\\^(.*?)#"},{"xpath":"//input[3]/@value","regex":"prize2\\^(.*?)\\^.*?#"}],
-      [{"input":"组选六"},{"xpath":"//input[3]/@value","regex":"prize3\\^.*?\\^(.*)"},{"xpath":"//input[3]/@value","regex":"prize3\\^(.*?)\\^.*"}]
-    ],
-    "tr_0":["name","money","count"]
+      [{"input":"name"},{"input":"count"},{"input":"money"}],
+      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('prize')"],
+      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('prize')"],
+      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('prize')"]
+      ],
+    "other_response":"json"
   }
 ]
