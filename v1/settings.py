@@ -67,9 +67,12 @@ DOWNLOADER_MIDDLEWARES = {
 #    'scrapy.extensions.telnet.TelnetConsole': None,
 #}
 
-# Configure item pipelines
+# Configure item pipelines StripPipeline
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {'v1.pipelines.MongoPipeline':300}
+ITEM_PIPELINES = {
+    'v1.pipelines.StripPipeline': 200,
+    'v1.pipelines.MongoPipeline':300,
+    }
 #    'v1.pipelines.SomePipeline': 300,
 #}
 MONGO_HOST = '127.0.0.1'

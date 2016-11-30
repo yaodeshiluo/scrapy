@@ -25,9 +25,12 @@ class Spider1(scrapy.spiders.Spider):
         return Request(each.get('website'), dont_filter=True, meta=each)
 
     def parse(self,response):
-        url_list = get_url_list(response)
-        for i in url_list:
-            yield Request(i, callback=self.parse_info, meta=response.meta)
+        if not response.meta.get('urllist'):
+            yield Request(response.meta.get('website'), callback=self.parse_all_in_one, meta=response.meta)
+        else:
+            url_list = get_url_list(response)
+            for i in url_list:
+                yield Request(i, callback=self.parse_info, meta=response.meta)
 
     def parse_info(self,response):
         item = V1Item()
@@ -131,22 +134,60 @@ class Spider1(scrapy.spiders.Spider):
         tr_list = filter(lambda x: filter(lambda y: y, x), tr_list)
         print 'tr_list is', tr_list
 
-        detail_list = []
         tr_0 = tr_list[0]
+
         for num in range(1, len(tr_list)):
             each_tr = tr_list[num]
+            tem_dict = None
+            target_dict = None
             adict = {}
+            detail_list = []
 
-            # adict[tr_0[0]] = each_tr[0]
-            # for i in range(1, len(each_tr)):
-            #     if tr_0[i] == tr_0[i - 1]:
-            #         if each_tr[i] != adict[tr_0[i - 1]]:
-            #             adict[tr_0[i]] += each_tr[i]
-            #         else:
-            #             pass
-            #     else:
-            #         adict[tr_0[i]] = each_tr[i]
-            detail_list.append(adict)
+            adict[tr_0[0]] = each_tr[0]
+            for i in range(1, len(each_tr)):
+                if isinstance(tr_0[i], basestring):
+                    if tr_0[i] == tr_0[i - 1]:
+                        if each_tr[i] != adict[tr_0[i - 1]]:
+                            adict[tr_0[i]] += each_tr[i]
+                        else:
+                            pass
+                    else:
+                        adict[tr_0[i]] = each_tr[i]
+                elif isinstance(tr_0[i], list):
+
+                    if not tem_dict:
+                        tem_dict = tr_0[i][0].copy()
+                        target_dict = tr_0[i][0].copy()
+                        target_dict[tr_0[i][1]] = each_tr[i]
+                    if tem_dict:
+                        if tr_0[i][0] == tem_dict:
+                            target_dict[tr_0[i][1]] = each_tr[i]
+                        if tr_0[i][0] != tem_dict:
+                            detail_list.append(target_dict.copy())
+                            tem_dict = tr_0[i][0].copy()
+                            target_dict = tr_0[i][0].copy()
+                            target_dict[tr_0[i][1]] = each_tr[i]
+                            # target_dict = tr_0[i][0]
+
+                if i == len(each_tr) - 1:
+                    if target_dict:
+                        detail_list.append(target_dict)
+                        adict["detail"] = detail_list
+
+            item = V1Item()
+            item['balance'] = adict.get('balance','')
+            item['name'] = response.meta.get('name')
+            item['issue'] = adict.get('issue','')
+            item['key'] = response.meta.get('key')
+            item['open_time'] = adict.get('open_time','')
+            item['result'] = adict.get('result','')
+            item['sales'] = adict.get('sales','')
+            item['src'] = response.meta.get('src')
+            item['detail'] = adict.get('detail','')
+
+
+            yield item
+
 
 
 

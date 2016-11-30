@@ -25,3 +25,10 @@ class MongoPipeline(object):
     def process_item(self, item, spider):
         self.collection.insert(dict(item))
         return item
+
+class StripPipeline(object):
+    def process_item(self, item, spider):
+        for field in item.fields:
+            if item.get(field) and isinstance(item.get(field), basestring):
+                item[field] = item[field].strip()
+        return item

@@ -1,18 +1,17 @@
 [
-  {"caizhong":"heilongjiang_ticai6jia1",
-  "website":"http://appdw.dbw.cn/ticai/Default2.aspx?id=1",
-  "urllist":"",
-  "balance":"",
-  "issue":"",
-  "key": "heilongjiang_ticai6jia1",
-  "name": "双色球",
-  "open_time": "",
-  "result": "",
-  "sales": "",
-  "src": "appdw.dbw.cn",
-  "detail": "",
-  "tr_0":["issue","open_time","sales","result",[{"name":"特等奖"},"count"],[{"name":"特等奖"},"money"],[{"name":"一等奖"},"count"],[{"name":"一等奖"},"money"],[{"name":"二等奖"},"count"],[{"name":"二等奖"},"money"],[{"name":"三等奖"},"count"],[{"name":"三等奖"},"money"],[{"name":"四等奖"},"count"],[{"name":"四等奖"},"money"],[{"name":"五等奖"},"count"],[{"name":"五等奖"},"money"]],
-  "items_table":"//*[@id=\"GridView1\"]",
-  "useless_rows":[0,1,2,3]
+  {"caizhong":"daletou",
+    "website":"http://caipiao.163.com/award/dlt/",
+    "urllist":"//a[starts-with(@href,'/award/dlt/') and @bonus and @pool]/text()",
+    "balance":"//*[@id=\"pool\"]",
+    "issue":"//*[@id=\"date_no\"]",
+    "key": "daletou",
+    "name": "大乐透",
+    "open_time": "//*[@id='time']",
+    "result": "//*[@id=\"zj_area\"]/span",
+    "sales": "//*[@id=\"sale\"]",
+    "src": "www.caipiao.163.com",
+    "detail": "//*[@id=\"sport_table\"]",
+    "useless_rows":[0],
+    "tr_0":["name","name","count","money"]
   }
 ]
