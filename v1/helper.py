@@ -114,7 +114,10 @@ def get_detail_list(sel,response):
             for td_query in tr_query:
                 each_td = None
                 if isinstance(td_query, basestring):
-                    each_td = eval(td_query) if eval(td_query) else ''
+                    try:
+                        each_td = eval(td_query)
+                    except:
+                        each_td = ''
                     if isinstance(each_td,(tuple,list)):
                         each_td = ','.join(each_td)
                 elif isinstance(td_query, dict):
@@ -131,7 +134,7 @@ def get_detail_list(sel,response):
 
     #filter. list like['','',''] will be removed from tr_list
     tr_list = filter(lambda x:filter(lambda y:y, x), tr_list)
-    # print tr_list
+    print 'tr_list is', tr_list
 
     detail_list = []
     tr_0 = tr_list[0]
@@ -150,6 +153,24 @@ def get_detail_list(sel,response):
         detail_list.append(adict)
     return detail_list
 
+def parse_single_item_from_json(item,response,sel):
+
+    for i in ['balance','issue','open_time','result','sales']:
+        try:
+            item[i] = eval(response.meta.get(i))
+        except:
+            item[i] = ''
+            print 'eval error'
+    item['name'] = response.meta.get('name')
+    item['key'] = response.meta.get('key')
+    item['src'] = response.meta.get('src')
+
+    detail_list = get_detail_list(sel, response) if response.meta.get('detail') else ''
+    item['detail'] = detail_list
+    return item
+
+def parse_multiple_items(response,sel):
+    pass
 
 
 

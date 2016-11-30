@@ -1,21 +1,18 @@
 [
-  {"caizhong":"fucai3d",
-    "website":"http://www.lecai.com/lottery/draw/list/52",
-    "urllist":"/html/body/div[5]/div[1]/table/tbody/tr[position()>=1 and position()<=30]/td[1]/a/text()",
-    "balance":"sel.get(\"data\").get(\"pool_amount\")",
-    "issue":"sel.get(\"data\").get(\"phase\")",
-    "key": "fucai3d",
-    "name": "福彩3d",
-    "open_time": "sel.get(\"data\").get(\"time_draw\")",
-    "result": "','.join(sel.get(\"data\").get(\"result\").get(\"result\")[0].get(\"data\"))",
-    "sales": "sel.get(\"data\").get(\"sale_amount\")",
-    "src": "www.lecai.com",
-    "detail": [
-      [{"input":"name"},{"input":"count"},{"input":"money"}],
-      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[0].get('prize')"],
-      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[1].get('prize')"],
-      ["sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('name')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('bet')","sel.get(\"data\").get(\"result_detail\").get('resultDetail')[2].get('prize')"]
-      ],
-    "other_response":"json"
+  {"caizhong":"heilongjiang_ticai6jia1",
+  "website":"http://appdw.dbw.cn/ticai/Default2.aspx?id=1",
+  "urllist":"",
+  "balance":"",
+  "issue":"",
+  "key": "heilongjiang_ticai6jia1",
+  "name": "双色球",
+  "open_time": "",
+  "result": "",
+  "sales": "",
+  "src": "appdw.dbw.cn",
+  "detail": "",
+  "tr_0":["issue","open_time","sales","result",[{"name":"特等奖"},"count"],[{"name":"特等奖"},"money"],[{"name":"一等奖"},"count"],[{"name":"一等奖"},"money"],[{"name":"二等奖"},"count"],[{"name":"二等奖"},"money"],[{"name":"三等奖"},"count"],[{"name":"三等奖"},"money"],[{"name":"四等奖"},"count"],[{"name":"四等奖"},"money"],[{"name":"五等奖"},"count"],[{"name":"五等奖"},"money"]],
+  "items_table":"//*[@id=\"GridView1\"]",
+  "useless_rows":[0,1,2,3]
   }
 ]
