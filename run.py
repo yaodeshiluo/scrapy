@@ -37,11 +37,11 @@ def div_list(ls,n=3):
         return alist
 def start():
     start_urls = []
+    s = datetime.utcnow()
+    print s
     for i in collection.find({}):
         crontab = i.get('crontab')
         print crontab
-        s = datetime.utcnow()
-        print s
         if crontab:
             print is_cron(s, crontab)
             if is_cron(s,crontab):
@@ -67,20 +67,8 @@ if __name__ == '__main__':
         defer.DeferredList(dfs).addBoth(lambda _: reactor.stop())
         reactor.run()
 
-# from v1.lottery import is_cron
-# from datetime import datetime
-# test = [['* * * * *']]
-# for i in test:
-#     # crontab = i.get('crontab')
-#     # print crontab
-#     crontab = i
-#     s = datetime.utcnow()
-#     print s
-#     if crontab:
-#         print is_cron(s, crontab)
-#         # if is_cron(s, crontab):
-#         #     print 'true'
-#     # start_urls.append(i)
+
+
 
 
 
