@@ -13,8 +13,8 @@ class Spider1(scrapy.spiders.Spider):
 
     def __init__(self, category=None, *args, **kwargs):
         super(Spider1, self).__init__(*args, **kwargs)
-        self.crawl_list = get_crawl_list(category)
-        self.start_urls = self.crawl_list
+        # self.crawl_list = get_crawl_list(category)
+        # self.start_urls = self.crawl_list
 
 
     def start_requests(self):
@@ -35,9 +35,18 @@ class Spider1(scrapy.spiders.Spider):
     def parse_info(self,response):
         item = V1Item()
         if response.meta.get('other_response') == 'json':
+            '''
+            meta里需含有以下key：
+            other_response,
+            json_info:{regex/how_many_items} 有regex则从response.body正则提取json
+            detail:[]  basestring直接eval  dict含regex（直接从response.body提取）；含input，直接手输，优先。
+            tr_0:[]
+            '''
             import re
             import json
+            #有other_response就必须有json_info，不然报错
             if response.meta.get('json_info').get('regex'):
+                #target_json有从response得到的，也有通过regex从response.body里取得。
                 json_query = response.meta.get('json_info').get('regex')
                 try:
                     target_json = json.loads(re.findall(json_query,response.body)[0])
@@ -45,37 +54,36 @@ class Spider1(scrapy.spiders.Spider):
                     target_json = json.loads(re.findall(json_query, response.body)[0] + '}')
             else:
                 target_json = json.loads(response.body)
-
+            #json_info必须有两个key，一个是regex，一个是how_many_items
             if response.meta.get('json_info').get('how_many_items') == 'single':
                 sel = target_json
                 item = parse_single_item_from_json(item,response,sel)
-                # item['balance'] = eval(response.meta.get('balance'))
-                # item['name'] = response.meta.get('name')
-                # item['issue'] = eval(response.meta.get('issue'))
-                # item['key'] = response.meta.get('key')
-                # item['open_time'] = eval(response.meta.get('open_time'))
-                # item['result'] = eval(response.meta.get('result'))
-                # item['sales'] = eval(response.meta.get('sales'))
-                # item['src'] = response.meta.get('src')
-
-                # detail_list = get_detail_list(sel,response) if response.meta.get('detail') else ''
-                # item['detail'] = detail_list
+                print item
                 yield item
             elif response.meta.get('json_info').get('how_many_items') == 'many':
+                #target_json含多个item信息时，需迭代。其可能为dict，也可能为list，对应不同迭代方式。
                 if isinstance(target_json,dict):
                     for sel in target_json.iteritems():
                         item = parse_single_item_from_json(item,response,sel)
+                        print item
                         yield item
                 if isinstance(target_json,list):
                     for sel in target_json:
                         item = parse_single_item_from_json(item,response,sel)
+                        print item
                         yield item
-
-
-
-
-        else:
+        else:#最常见的解析页面。即有table和其他信息。
             sel = response.selector
+            #以下每个key都有regex和xpath两种解析方式
+            '''
+            meta里需含有以下key：
+            首先不含other_response（或为空）,
+            detail:[]  basestring直接xpath得到表格，再常规解析表格。
+                       若为list，则：
+                           对应td若为dict必须xpath和input必有其中一项。
+                           若有regex则会进一步对xpath得到的值再取值。
+            tr_0:[]
+            '''
             for i in ['balance','issue','open_time','sales']:
                 if response.meta.get(i):
                     query = response.meta.get(i)
@@ -87,6 +95,7 @@ class Spider1(scrapy.spiders.Spider):
                         item[i] = sel.xpath(query + '/text()').extract()[0]
                 else:
                     item[i] = ''
+            #result列表和字符串两种形式的结果的处理。
             if len(sel.xpath(response.meta.get('result'))) == 1:
                 item['result'] = sel.xpath(response.meta.get('result')).extract()
             else:
@@ -97,9 +106,20 @@ class Spider1(scrapy.spiders.Spider):
             item['key'] = response.meta.get('key')
             item['src'] = response.meta.get('src')
 
-            detail_list = get_detail_list(sel, response) if response.meta.get('detail') else None
+            #相关的meta信息有useless_rows，tr_0,且无other_response这一项。
+            detail_list = get_detail_list(sel, response) if response.meta.get('detail') else ''
             item['detail'] = detail_list
+            print item
             yield item
+    '''
+    上面两处方法都是先得到urllist，再从每个url返回的页面提取单个item的信息。
+    下面这个方法则是从一个页面得到多个item。
+    所以meta里的urllist为空。parse这一函数会将请求callback设置为parse_all_in_one。
+    meta里需有的key：
+    tr_0    设置比较特殊。是list，非item里detail的诸如sales,open_time等直接手输，对应表格相应位置。
+            但detail里的键如name，count，money，则[{"name":"一等奖"},"count"],[{"name":"一等奖"},"money"]
+    items_table 包含items的表格的xpath
+    '''
     def parse_all_in_one(self,response):
         sel = response.selector
         tr_list = []
@@ -186,6 +206,7 @@ class Spider1(scrapy.spiders.Spider):
             item['detail'] = adict.get('detail','')
 
 
+            print item
             yield item
 
 

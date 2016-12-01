@@ -2,7 +2,7 @@
   {"caizhong":"daletou",
     "website":"http://www.lottery.gov.cn/historykj/history.jspx?page=false&_ltype=dlt&termNum=30&startTerm=&endTerm=",
     "urllist":"/html/body/div[3]/div[2]/div[2]/table/tbody/tr[position()<=30]/td[17]/a/@href",
-    "balance":{"regex":">(.*?)元奖金滚入下期奖池"},
+    "balance":{"regex":">(.*)元奖金滚入下期奖池"},
     "issue":"/html/body/div[4]/div/div[1]",
     "key": "daletou",
     "name": "大乐透",
