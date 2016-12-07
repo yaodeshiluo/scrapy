@@ -7,6 +7,7 @@ from v1.items import V1Item
 from v1.helper import get_crawl_list, get_detail_list, get_url_list, parse_single_item_from_json
 from scrapy import Request
 
+
 class Spider1(scrapy.spiders.Spider):
     name = 'v1'
 
@@ -58,19 +59,16 @@ class Spider1(scrapy.spiders.Spider):
             if response.meta.get('json_info').get('how_many_items') == 'single':
                 sel = target_json
                 item = parse_single_item_from_json(item,response,sel)
-                print item
                 yield item
             elif response.meta.get('json_info').get('how_many_items') == 'many':
                 #target_json含多个item信息时，需迭代。其可能为dict，也可能为list，对应不同迭代方式。
                 if isinstance(target_json,dict):
                     for sel in target_json.iteritems():
                         item = parse_single_item_from_json(item,response,sel)
-                        print item
                         yield item
                 if isinstance(target_json,list):
                     for sel in target_json:
                         item = parse_single_item_from_json(item,response,sel)
-                        print item
                         yield item
         else:#最常见的解析页面。即有table和其他信息。
             sel = response.selector
@@ -87,29 +85,44 @@ class Spider1(scrapy.spiders.Spider):
             for i in ['balance','issue','open_time','sales']:
                 if response.meta.get(i):
                     query = response.meta.get(i)
+                    #直接先xpath里的值extract后（可能包括<div>等元素符号）用regex
                     if isinstance(query, dict):
-                        item[i] = sel.xpath(query.get('xpath')).xpath('string(.)').extract()[0]
+                        item[i] = sel.xpath(query.get('xpath')).extract()[0]
                         from re import findall
-                        item[i] = findall(query.get('regex'), item[i])[0] if findall(query.get('regex'), item[i]) else item[i]
+                        item[i] = findall(query.get('regex'), item[i])[0] \
+                            if findall(query.get('regex'), item[i]) else item[i]
                     else:
-                        item[i] = sel.xpath(query + '/text()').extract()[0]
+                        if sel.xpath(query + '/text()').extract():
+                            item[i] = sel.xpath(query + '/text()').extract()[0]
+                        else:
+                            item[i] = sel.xpath(query).extract()[0] \
+                                if sel.xpath(query).extract() else ''
                 else:
                     item[i] = ''
             #result列表和字符串两种形式的结果的处理。
-            if len(sel.xpath(response.meta.get('result'))) == 1:
-                item['result'] = sel.xpath(response.meta.get('result')).extract()
+            #result 目前直接xpath得到。暂无需要regex的情况
+            if sel.xpath(response.meta.get('result') + '/text()'):
+                item['result'] = sel.xpath(response.meta.get('result')).xpath('string(.)').extract()
             else:
-                item['result'] = sel.xpath(response.meta.get('result') + '/text()').extract()
-                item['result'] = ','.join(item['result'])
+                item['result'] = sel.xpath(response.meta.get('result')).extract()
+            item['result'] = ','.join(item['result'])
+
+            # if len(sel.xpath(response.meta.get('result'))) == 1:
+            #     item['result'] = sel.xpath(response.meta.get('result')).extract()[0]
+            # else:
+            #     item['result'] = sel.xpath(response.meta.get('result') + '/text()').extract()
+            #     item['result'] = ','.join(item['result'])
+
 
             item['name'] = response.meta.get('name')
             item['key'] = response.meta.get('key')
             item['src'] = response.meta.get('src')
+            item['url'] = response.url
+
 
             #相关的meta信息有useless_rows，tr_0,且无other_response这一项。
             detail_list = get_detail_list(sel, response) if response.meta.get('detail') else ''
             item['detail'] = detail_list
-            print item
             yield item
     '''
     上面两处方法都是先得到urllist，再从每个url返回的页面提取单个item的信息。
@@ -152,7 +165,7 @@ class Spider1(scrapy.spiders.Spider):
 
         # filter. list like['','',''] will be removed from tr_list
         tr_list = filter(lambda x: filter(lambda y: y, x), tr_list)
-        print 'tr_list is', tr_list
+        # print 'tr_list is', tr_list
 
         tr_0 = tr_list[0]
 
@@ -204,9 +217,9 @@ class Spider1(scrapy.spiders.Spider):
             item['sales'] = adict.get('sales','')
             item['src'] = response.meta.get('src')
             item['detail'] = adict.get('detail','')
+            item['url'] = response.url
 
 
-            print item
             yield item
 
 

@@ -5,7 +5,8 @@ from scrapy.http import HtmlResponse, Response
 from pip import basecommand
 from selenium import webdriver
 # import selenium.webdriver.support.ui as ui
-
+import sys
+sys.path.append(r'D:\virtualenv\caipiao\venv')
 
 class CustomDownloader(object):
     def __init__(self):
@@ -25,7 +26,7 @@ class CustomDownloader(object):
         # 翻到底，详情加载
         # js = "var q=document.documentElement.scrollTop=10000"
         # self.driver.execute_script(js)
-        # time.sleep(5)
+        time.sleep(5)
         content = self.driver.page_source.encode('utf-8', 'ignore')
         print(u'网页加载完毕.....')
         return content

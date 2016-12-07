@@ -47,13 +47,14 @@ def start():
         query = json.load(f)
 
     for i in query:
+        start_urls.append(i)
     # for i in collection.find({}):
-        crontab = i.get('crontab')
-        print crontab
-        if crontab:
-            print is_cron(s, crontab)
-            if is_cron(s,crontab):
-                start_urls.append(i)
+    #     crontab = i.get('crontab')
+    #     print crontab
+    #     if crontab:
+    #         print is_cron(s, crontab)
+    #         if is_cron(s,crontab):
+    #             start_urls.append(i)
     if not start_urls:
         print 'no start_urls'
     return start_urls
@@ -74,54 +75,3 @@ if __name__ == '__main__':
 
         defer.DeferredList(dfs).addBoth(lambda _: reactor.stop())
         reactor.run()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # while True:
-    #     print 'start'
-    #
-    #     start_urls = []
-    #     if collection.find({"website": "http://www.lecai.com/lottery/draw/list/52"}).count():
-    #         for i in collection.find({}):
-    #             crontab = i.get('crontab')
-    #             print crontab
-    #             s = datetime.utcnow()
-    #             print s
-    #             # if crontab:
-    #             #     print is_cron(s, crontab)
-    #             #     if is_cron(s, crontab):
-    #             start_urls.append(i)
-    #         if start_urls:
-    #             print start_urls
-    #             runner = CrawlerRunner(get_project_settings())
-    #             d =runner.crawl(Spider1, start_urls=start_urls)
-    #             d.addBoth(lambda _: reactor.stop())
-    #             reactor.run() # the script will block here until the crawling is finished
-    #         print 'end'

@@ -2,10 +2,14 @@
 import json
 import re
 from scrapy.utils.url import urljoin_rfc
+import os
 
+
+json_location = os.path.abspath(__file__) + r'/spiders/linux.json'
+print json_location
 def get_crawl_list(category):
     alist=[]
-    with open(r'D:\virtualenv\caipiao\v1\v1\spiders\query.json', 'r') as f:
+    with open(json_location, 'r') as f:
         query = json.load(f)
         if category is None:
             alist = query
@@ -50,15 +54,24 @@ def get_url_list(response):
         for i in url_list_raw.extract():
             url = baseurl%(i)
             alist.append(url)
+            print alist
+        return alist
+    if response.meta.get('baseurl'):
+        baseurl = response.meta.get('baseurl')
+        alist = []
+        for i in url_list_raw.extract():
+            url = baseurl % (i)
+            alist.append(url)
+            print alist
         return alist
 
-    print 'no handle'
+    # print 'no handle'
     print 'url_list is',url_list_raw.extract()
     url_list = []
     for url in url_list_raw.extract():
         full_url = response.urljoin(url)
         url_list.append(full_url)
-    print 'url_list is',url_list
+    # print 'url_list is',url_list
     return url_list
 
 def get_detail_list(sel,response):
@@ -95,23 +108,27 @@ def get_detail_list(sel,response):
         for tr_query in response.meta.get('detail'):
             each_tr = []
             for td_query in tr_query:
-                each_td = None
+                each_td = ''
                 if isinstance(td_query, basestring):
                     each_td = sel.xpath(td_query).xpath('string(.)').extract()[0] \
                         if sel.xpath(td_query).xpath('string(.)') else ''
                 elif isinstance(td_query, dict):
                     #xpath 和 input其中一项必不为空
-                    if td_query.get('xpath'):
-                        if td_query.get('regex'):
-                            each_td = sel.xpath(td_query.get('xpath')).xpath('string(.)').extract()[0] \
-                                if sel.xpath(td_query.get('xpath')).xpath('string(.)').extract() else ''
-                            each_td = re.findall(td_query.get('regex'), each_td)[0] \
-                                if re.findall(td_query.get('regex'), each_td) else ''
-                        else:
-                            each_td = sel.xpath(td_query.get('xpath') + '/text()').extract()[0] \
-                                if sel.xpath(td_query.get('xpath') + '/text()').extract() else ''
+                    #regex 是对xpath里的包括<span> <div>等元素符号里的文本进行搜索。
                     if td_query.get('input'):
                         each_td = td_query.get('input')
+                    else:
+                        regex_from = response.body
+                        if td_query.get('xpath'):
+                            regex_from = sel.xpath(td_query.get('xpath')).extract()[0] \
+                                if sel.xpath(td_query.get('xpath')).extract() else regex_from
+                        if td_query.get('regex'):
+                            each_td = re.findall(td_query.get('regex'), regex_from)[0] \
+                                if re.findall(td_query.get('regex'), regex_from) else ''
+                            # else:
+                            #     each_td = sel.xpath(td_query.get('xpath') + '/text()').extract()[0] \
+                            #         if sel.xpath(td_query.get('xpath') + '/text()').extract() else ''
+
                 each_tr.append(each_td)
             tr_list.append(each_tr)
             '''
@@ -123,7 +140,7 @@ def get_detail_list(sel,response):
             each_tr = []
             #每个td都可以通过eval得到，或是regex、input得到
             for td_query in tr_query:
-                each_td = None
+                each_td = ''
                 if isinstance(td_query, basestring):
                     try:
                         each_td = eval(td_query)
@@ -132,11 +149,17 @@ def get_detail_list(sel,response):
                     if isinstance(each_td,(tuple,list)):
                         each_td = ','.join(each_td)
                 elif isinstance(td_query, dict):
-                    if td_query.get('regex'):
-                        each_td = re.findall(td_query.get('regex'), response.body)[0] \
-                            if re.findall(td_query.get('regex'), response.body) else ''
                     if td_query.get('input'):
                         each_td = td_query.get('input')
+                    else:
+                        regex_from = response.body
+                        if td_query.get("xpath"):
+                            regex_from = response.selector.xpath(td_query.get("xpath")).extract()[0] \
+                                if response.selector.xpath(td_query.get("xpath")) else regex_from
+                        if td_query.get('regex'):
+                            each_td = re.findall(td_query.get('regex'), regex_from)[0] \
+                                if re.findall(td_query.get('regex'), regex_from) else ''
+
                 each_tr.append(each_td)
             tr_list.append(each_tr)
 
@@ -146,7 +169,7 @@ def get_detail_list(sel,response):
 
     #filter. list like['','',''] will be removed from tr_list
     tr_list = filter(lambda x:filter(lambda y:y, x), tr_list)
-    print 'tr_list done'
+    # print 'tr_list done'
 
     '''
     由tr_list得到item的相应detail_list。格式为detail:[{},{},{}]
@@ -166,7 +189,7 @@ def get_detail_list(sel,response):
             else:
                 adict[tr_0[i]] = each_tr[i]
         detail_list.append(adict)
-    print 'detail_list done'
+    # print 'detail_list done'
     return detail_list
 
 def parse_single_item_from_json(item,response,sel):
@@ -180,6 +203,7 @@ def parse_single_item_from_json(item,response,sel):
     item['name'] = response.meta.get('name')
     item['key'] = response.meta.get('key')
     item['src'] = response.meta.get('src')
+    item['url'] = response.url
 
     detail_list = get_detail_list(sel, response) if response.meta.get('detail') else ''
     item['detail'] = detail_list

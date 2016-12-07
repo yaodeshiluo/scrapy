@@ -27,5 +27,43 @@
     "src": "kaijiang.500.com",
     "detail": "/html/body/div[1]/div[8]/div[2]/div[1]/div[2]/table[3]",
     "col_span":[0,12]
-  }
+  },
+{
+    "website" : "http://kaijiang.zhcw.com/lishishuju/jsp/ssqInfoList.jsp?czId=1",
+    "src" : "http://www.zhcw.com/",
+    "caizhong" : "shuangseqiu",
+    "name" : "双色球",
+    "webdriver" : "phantomjs",
+    "tr_0" : [
+        "name",
+        "count",
+        "money"
+    ],
+    "sales" : {
+        "xpath" : "//*[@id='sales']",
+        "regex" : "本期销售额：(.*?)元"
+    },
+    "detail" : "//table[@class='tYong'][1]",
+    "result" : "/html/body/div[3]/div[5]/div[1]/div/div[5]//strong",
+    "key" : "shuangseqiu",
+    "urllist" : "//table//tr[position()>=3 and position()<=23]/td[13]/a/@href",
+    "balance" : {
+        "xpath" : "//*[@id='sales']",
+        "regex" : "，奖池累计金额：(.*?)元"
+    },
+    "issue" : {
+        "xpath" : "//*[@id=\"kjsj\"]",
+        "regex" : "第 (.*?) 期"
+    },
+    "useless_rows" : [
+        0
+    ],
+    "open_time" : {
+        "xpath" : "//*[@id=\"kjsj\"]",
+        "regex" : "开奖时间：(.*)"
+    },
+    "crontab" : [
+        "00 */2 * * *"
+    ]
+}
 ]

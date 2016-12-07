@@ -2,9 +2,9 @@
 
 from scrapy.exceptions import IgnoreRequest
 from scrapy.http import HtmlResponse, Response, Request
-
+from scrapy import signals
 import v1.middlewares.downloader as downloader
-
+import random
 
 
 class CustomMiddlewares(object):
@@ -25,3 +25,26 @@ class CustomMiddlewares(object):
             return IgnoreRequest("body length == 100")
         else:
             return response
+
+class MyUserAgentMiddleware(object):
+    """This middleware allows spiders to override the user_agent"""
+
+    def __init__(self, user_agent='Scrapy'):
+        self.user_agent = user_agent
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        o = cls(crawler.settings['USER_AGENT'])
+        crawler.signals.connect(o.spider_opened, signal=signals.spider_opened)
+        return o
+
+    def spider_opened(self, spider):
+        self.user_agent = getattr(spider, 'user_agent', self.user_agent)
+
+    def process_request(self, request, spider):
+        if self.user_agent:
+            if isinstance(self.user_agent,list):
+                ua = random.choice(self.user_agent)
+                request.headers.setdefault(b'User-Agent', ua)
+            else:
+                request.headers.setdefault(b'User-Agent', self.user_agent)
