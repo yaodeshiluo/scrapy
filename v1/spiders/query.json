@@ -1,3 +1,17 @@
 [
-
+  {"caizhong":"pailie3",
+    "website":"http://www.lecai.com/lottery/draw/view/3",
+    "urllist":"//*[@id=\"history_phase_list\"]/option[position()<20]/text()",
+    "baseurl":"http://www.lecai.com/lottery/draw/view/3/%s?",
+    "balance":"",
+    "issue":"//*[@id=\"jq_draw_phase\"]",
+    "key": "pailie3",
+    "name": "排列3",
+    "open_time": "//*[@id=\"jq_draw_date\"]",
+    "result": "//*[@id=\"jq_draw_result\"]/span",
+    "sales": "//*[@id=\"jq_volume\"]",
+    "src": "www.lecai.com",
+    "detail": "//*[@id=\"jq_draw_detail\"]",
+    "webdriver":"phantomjs"
+  }
 ]

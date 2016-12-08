@@ -1,12 +1,12 @@
 # coding: utf-8
 import json
 import re
-from scrapy.utils.url import urljoin_rfc
+
 import os
 
 
-json_location = os.path.abspath(__file__) + r'/spiders/linux.json'
-print json_location
+json_location = os.path.dirname(os.path.abspath(__file__)) + r'/spiders/query.json'
+
 def get_crawl_list(category):
     alist=[]
     with open(json_location, 'r') as f:
@@ -31,7 +31,21 @@ def get_crawl_list(category):
     return alist
 
 def get_url_list(response):
-    url_list_raw = response.selector.xpath(response.meta.get('urllist'))
+    print response.meta
+    print '<td>8129</td>' in response.body
+    print '<td>1040</td>' in response.body
+    print response.xpath('//*[@id="jq_draw_detail"]/tbody/tr[3]/td[3]/text()').extract()
+    url_list_raw = response.selector.xpath(response.meta.get('query').get('urllist'))
+    # print type(response)
+    # print type(response.body)
+    # print len(response.body)
+    #
+    # print response.body.count('8129')
+    # print response.meta.get('urllist')
+    # url_list_raw = response.xpath(response.meta.get('urllist'))
+    # url_list_raw = response.xpath('//*[@id="jq_draw_detail"]')
+    # print 'url_list_raw is',url_list_raw
+    # print response.meta.get('splash').get('args').get('url')
 
     special_urls = {'http://kjh.cailele.com/kj_ssq.shtml':'http://kjh.cailele.com/common/kjgg.php?lotType=100&term=%s',
                       'http://www.lecai.com/lottery/draw/list/52':'http://www.lecai.com/lottery/draw/ajax_get_detail.php?lottery_type=52&phase=%s',
@@ -54,7 +68,7 @@ def get_url_list(response):
         for i in url_list_raw.extract():
             url = baseurl%(i)
             alist.append(url)
-            print alist
+            # print alist
         return alist
     if response.meta.get('baseurl'):
         baseurl = response.meta.get('baseurl')
@@ -62,11 +76,11 @@ def get_url_list(response):
         for i in url_list_raw.extract():
             url = baseurl % (i)
             alist.append(url)
-            print alist
+            # print alist
         return alist
 
     # print 'no handle'
-    print 'url_list is',url_list_raw.extract()
+    # print 'url_list is',url_list_raw.extract()
     url_list = []
     for url in url_list_raw.extract():
         full_url = response.urljoin(url)

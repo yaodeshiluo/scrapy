@@ -10,7 +10,7 @@ from datetime import datetime
 import os
 import json
 #from json
-json_location = os.path.dirname(os.path.abspath(__file__)) + r'/v1/spiders/linux.json'
+json_location = os.path.dirname(os.path.abspath(__file__)) + r'/v1/spiders/query.json'
 print json_location
 
 # host = settings['MONGO_HOST']
@@ -71,7 +71,11 @@ if __name__ == '__main__':
         dfs = set()
         for i in div_list(start_urls):
             d = runner.crawl(Spider1, start_urls=i)
+            # runner.crawl(Spider1, start_urls=i)
             dfs.add(d)
+
+        # d = runner.join
+        # d.addBoth(lambda _: reactor.stop())
 
         defer.DeferredList(dfs).addBoth(lambda _: reactor.stop())
         reactor.run()

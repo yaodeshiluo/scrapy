@@ -6,16 +6,31 @@ import scrapy
 from v1.items import V1Item
 from v1.helper import get_crawl_list, get_detail_list, get_url_list, parse_single_item_from_json
 from scrapy import Request
+from scrapy_splash import SplashRequest
 
-
+script = """
+function main(splash)
+  local url = splash.args.url
+  assert(splash:go(url))
+  assert(splash:wait(0.5))
+  local entries = splash:history()
+  local last_response = entries[#entries].response
+  return {
+    url = splash:url(),
+    headers = last_response.headers,
+    html = splash:html(),
+  }
+end
+"""
 class Spider1(scrapy.spiders.Spider):
     name = 'v1'
 
 
+
     def __init__(self, category=None, *args, **kwargs):
         super(Spider1, self).__init__(*args, **kwargs)
-        # self.crawl_list = get_crawl_list(category)
-        # self.start_urls = self.crawl_list
+        self.crawl_list = get_crawl_list(category)
+        self.start_urls = self.crawl_list
 
 
     def start_requests(self):
@@ -23,17 +38,76 @@ class Spider1(scrapy.spiders.Spider):
             yield self.make_requests_from_url(each)
 
     def make_requests_from_url(self, each):
-        return Request(each.get('website'), dont_filter=True, meta=each)
+        # script ='''
+        #     function main(splash)
+        #       local url = splash.args.url
+        #       assert(splash:go(url))
+        #       assert(splash:wait(0.5))
+        #       return {
+        #         html = splash:html(),
+        #       }
+        #     end'''
+
+
+
+#         each['splash'] = {
+#         'args': {
+#             # set rendering arguments here
+#             # 'html': 1,
+#             # 'png': 1,
+#             # 'timeout': 10,
+#             # 'wait': 5,
+#             # 'render_all': 1,
+#             'lua_source': script
+#
+# #
+#             # 'url' is prefilled from request url
+#             # 'http_method' is set to 'POST' for POST requests
+#             # 'body' is set to request body for POST requests
+#         },
+#         'endpoint': 'execute',
+#         # optional parameters
+#         # 'endpoint': 'render.json',  # optional; default is render.json
+#         # 'splash_url': '<url>',      # optional; overrides SPLASH_URL
+#         # 'slot_policy': scrapy_splash.SlotPolicy.PER_DOMAIN,
+#         # 'splash_headers': {},       # optional; a dict with headers sent to Splash
+#         'dont_process_response': True, # optional, default is False
+#         # 'dont_send_headers': True,  # optional, default is False
+#         # 'magic_response': False,    # optional, default is True
+#
+#         }
+#         print each
+        adict = {'query':each}
+        # return Request(each.get('website'), dont_filter=True, meta=each)
+        return  SplashRequest(each.get('website'), self.parse,
+            endpoint='execute',
+            cache_args=['lua_source'],
+            args={'lua_source': script},
+            headers={'X-My-Header': 'value'},
+        meta=adict)
 
     def parse(self,response):
-        if not response.meta.get('urllist'):
-            yield Request(response.meta.get('website'), callback=self.parse_all_in_one, meta=response.meta)
-        else:
+        # print response.body
+        # if not response.meta.get('urllist'):
+        #     yield Request(response.meta.get('website'), callback=self.parse_all_in_one, meta=response.meta)
+        # else:
             url_list = get_url_list(response)
+            query = response.meta.get('query')
+            adict = {'query':query}
             for i in url_list:
-                yield Request(i, callback=self.parse_info, meta=response.meta)
+                # yield Request(i, callback=self.parse_info, meta=response.meta)
+                yield SplashRequest(i, self.parse_info,
+            endpoint='execute',
+            cache_args=['lua_source'],
+            args={'lua_source': script},
+            headers={'X-My-Header': 'value'},
+        meta=adict)
 
     def parse_info(self,response):
+        print response.meta
+        print 'response ajax'
+        print '<td>8129</td>' in response.body
+        print '<td>1040</td>' in response.body
         item = V1Item()
         if response.meta.get('other_response') == 'json':
             '''
